@@ -6,7 +6,6 @@ var Canvas = {
 	width: null,
 	blockSize: null,
 	finished: null,
-	finalImage: null,
 	workersCount: null,
 	iterations: null,
 	startTime: null,
@@ -38,16 +37,16 @@ $(document).ready(function () {
 
 	$("#slider-range-iterations").slider({
 		range: "min",
-		min: 5000,
+		min: 500,
 		max: 10000,
-		value: 7500,
-		step: 200,
+		value: 5000,
+		step: 500,
 	});
 
 	$("#slider-range-webWorkers").slider({
 		range: "min",
 		min: 1,
-		max: 8,
+		max: 4,
 		value: 1,
 		step: 1,
 	});
@@ -71,7 +70,6 @@ $(document).ready(function () {
 		Canvas.iterations = $("#slider-range-iterations").slider("values",0);
 		Canvas.workersCount = $("#slider-range-webWorkers").slider("values",0);
 
-		Canvas.finalImage = [Canvas.workersCount];
 		Canvas.blockSize = Math.floor(Canvas.height / Canvas.workersCount);
 		Canvas.finished = 0;
 
@@ -105,19 +103,22 @@ function messageHandler(e)
 {	
 	var canvasData = e.data.result;
 	var index = e.data.index;
-	Canvas.finalImage[index] = canvasData;
+	Canvas.tempContext.putImageData(canvasData, 0, Canvas.blockSize * index);
 	Canvas.finished++;
 	if (Canvas.finished === Canvas.workersCount) {
-		DrawSet(Canvas.finalImage);
-		console.log((new Date().getTime() - Canvas.startTime)/1000 + " seconds");
+		timeLog();
 		hideLoadingGif();
 	}
 }
 
-function DrawSet(finalImage)
+function timeLog()
 {
-	for (var c = 0; c < Canvas.workersCount; c++)
-		Canvas.tempContext.putImageData(finalImage[c], 0, Canvas.blockSize * c);
+	$div = $("#timeLog");
+	$div .empty();
+	var totalTime = (new Date().getTime() - Canvas.startTime)/1000;
+	var text = totalTime + " seconds using " + Canvas.workersCount + 
+				" Web Worker(s) @" + Canvas.iterations + " iterations.";
+	$div.text(text);
 }
 
 function initializeCanvas()
@@ -130,6 +131,9 @@ function initializeCanvas()
 
 function showLoadingGif()
 {
+	$div = $("#timeLog");
+	$div .empty();
+	$div.text("Processing...");
 	$("#start").hide();
 	$("#loading").show();
 }
@@ -153,7 +157,12 @@ function showSliderBubble(id)
 function updateCellSliderValues(id)
 {
 	var value = $("#"+ id).slider("values",0);
-	var denominator = $("#slider-range-iterations").slider("option", "max") - $("#slider-range-iterations").slider("option", "min"),
-	offSet = ((value-$("#slider-range-iterations").slider("option", "min"))*100)/denominator;
+	var denominator;
+	if (id === "slider-range-webWorkers")
+			denominator = $("#slider-range-webWorkers").slider("option", "max") - $("#slider-range-webWorkers").slider("option", "min"),
+		offSet = ((value-$("#slider-range-webWorkers").slider("option", "min"))*100)/denominator;
+	else
+		denominator = $("#slider-range-iterations").slider("option", "max") - $("#slider-range-iterations").slider("option", "min"),
+		offSet = ((value-$("#slider-range-iterations").slider("option", "min"))*100)/denominator;
 	$("#"+ id + "-bubbleValue").text(value).css({"left": + offSet + "%"});
 }

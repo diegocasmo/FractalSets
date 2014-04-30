@@ -9,7 +9,6 @@ Mandelbrot.doMandelbrot = function(binaryData, iterations, workerHeight, workerW
     Mandelbrot.MaxIm = Mandelbrot.MinIm+(Mandelbrot.MaxRe-Mandelbrot.MinRe)*(imageHeight/workerWidth);
     var Re_factor = (Mandelbrot.MaxRe-Mandelbrot.MinRe)/(workerWidth-1);
     var Im_factor = (Mandelbrot.MaxIm-Mandelbrot.MinIm)/(imageHeight-1);
-    var MaxIterations = iterations;
 
     for(var y = 0; y < workerHeight; y++)
     {
@@ -20,7 +19,7 @@ Mandelbrot.doMandelbrot = function(binaryData, iterations, workerHeight, workerW
 
             var Z_re = c_re, Z_im = c_im;
             var isInside = true;
-            for(var n=0; n<MaxIterations; ++n)
+            for(var n=0; n<iterations; ++n)
             {
                 var Z_re2 = Z_re*Z_re, Z_im2 = Z_im*Z_im;
                 if(Z_re2 + Z_im2 > 4)
@@ -36,7 +35,7 @@ Mandelbrot.doMandelbrot = function(binaryData, iterations, workerHeight, workerW
                  Mandelbrot.drawPixel(x, y, 0, 0, 0, 255, binaryData, workerWidth);
             else
             {
-                var pixelColor = 3*Math.log(n)/Math.log(MaxIterations - 1.0);
+                var pixelColor = 3*Math.log(n)/Math.log(iterations - 1.0);
                 if (pixelColor < 1)
                     Mandelbrot.drawPixel(x, y, 255*pixelColor, 0, 0, 255, binaryData, workerWidth);
                 else if (pixelColor < 2)
