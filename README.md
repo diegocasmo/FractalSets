@@ -3,4 +3,4 @@ FractalSets
 
 This application generates a graphic representation of either the Mandelbrot or the Julia set based on the configuration chosen by the user. The goal of this application is to use parallel programming and to measure how time varies in making the calculation for the set due to the number of iterations and Web Workers selected by the user.
 
-A working demo can be found here: http://www.diegocasmo.me/fractal-sets/
+A working demo can be found here: http://www.diegocasmo.me/projects/fractal-sets/
